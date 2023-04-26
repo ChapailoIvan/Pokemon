@@ -9,12 +9,19 @@ import by.chapailo.pokemons.data.util.Converters
     entities = [
         PokemonDbEntity::class,
         PokemonDetailsDbEntity::class
-    ], version = 1
+    ],
+    version = 1
 )
 @TypeConverters(Converters::class)
 abstract class PokemonDatabase : RoomDatabase() {
 
     abstract val pokemonDao: PokemonDao
     abstract val pokemonDetailsDao: PokemonDetailsDao
+
+    companion object {
+
+        const val NAME = "pokemon-database"
+
+    }
 
 }

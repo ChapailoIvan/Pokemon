@@ -3,6 +3,8 @@ package by.chapailo.pokemons
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.navigation.compose.rememberNavController
+import by.chapailo.pokemons.presentation.navigation.NavGraph
 import by.chapailo.pokemons.ui.theme.PokemonsTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -13,8 +15,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            PokemonsTheme {
 
+            val navController = rememberNavController()
+
+            PokemonsTheme {
+                NavGraph(navController = navController)
             }
         }
     }

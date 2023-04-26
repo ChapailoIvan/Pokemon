@@ -3,8 +3,15 @@ package by.chapailo.pokemons.di
 import android.content.Context
 import androidx.room.Room
 import by.chapailo.pokemons.common.Constants
+import by.chapailo.pokemons.data.local.PokemonDao
 import by.chapailo.pokemons.data.local.PokemonDatabase
+import by.chapailo.pokemons.data.local.PokemonDetailsDao
 import by.chapailo.pokemons.data.remote.PokemonApi
+import by.chapailo.pokemons.data.repositories.DefaultPokemonDetailsRepository
+import by.chapailo.pokemons.data.repositories.DefaultPokemonListRepository
+import by.chapailo.pokemons.data.repositories.PokemonDetailsRepository
+import by.chapailo.pokemons.data.repositories.PokemonListRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,8 +43,36 @@ object ApplicationModule {
         return Room.databaseBuilder(
             context,
             PokemonDatabase::class.java,
-            "pokemon-database"
+            PokemonDatabase.NAME
         ).build()
     }
+
+    @Provides
+    @Singleton
+    fun providePokemonDatabasePokemonDao(
+        pokemonDatabase: PokemonDatabase
+    ): PokemonDao = pokemonDatabase.pokemonDao
+
+    @Provides
+    @Singleton
+    fun providePokemonDatabasePokemonDetailsDao(
+        pokemonDatabase: PokemonDatabase
+    ): PokemonDetailsDao = pokemonDatabase.pokemonDetailsDao
+
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface ViewModelBindings {
+
+    @Binds
+    fun bindDefaultPokemonDetailsRepositoryToPokemonDetailsRepository(
+        defaultPokemonDetailsRepository: DefaultPokemonDetailsRepository
+    ): PokemonDetailsRepository
+
+    @Binds
+    fun bindDefaultPokemonListRepositoryToPokemonListRepository(
+        defaultPokemonListRepository: DefaultPokemonListRepository
+    ): PokemonListRepository
 
 }
