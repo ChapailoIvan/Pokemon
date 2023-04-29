@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Pokemons</string>
     <string name="unexpected_error">Unexpected error occurred</string>
+    <string name="refreshing_data_error">Error occurred while refreshing data</string>
+    <string name="load_state_not_loading_message">There is no internet to load more data</string>
+    <string name="end_of_pagination_reached">End of pagination reached</string>
 </resources>

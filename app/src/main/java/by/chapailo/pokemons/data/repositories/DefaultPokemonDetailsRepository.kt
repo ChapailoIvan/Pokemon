@@ -14,15 +14,15 @@ class DefaultPokemonDetailsRepository @Inject constructor(
 ) : PokemonDetailsRepository {
 
     override fun fetchPokemonDetails(
-        name: String,
-        url: String
+        id: Int,
+        name: String
     ): Flow<Resource<PokemonDetailsDbEntity?>> =
         networkBoundResource(
             query = {
                 pokemonDetailsDao.getBy(name)
             },
             fetch = {
-                pokemonApi.getPokemonDetails(link = url)
+                pokemonApi.getPokemonDetails(id = id)
             },
             saveFetchedResult = {
                 pokemonDetailsDao.save(PokemonDetailsDbEntity(it))

@@ -32,27 +32,28 @@ fun NavGraph(
 
             PokemonListScreen(
                 pokemonList = viewModel.pokemonPagingData,
-                state = viewModel.state.value,
-                navigateToDetailsScreen = { name, url ->
+                navigateToDetailsScreen = { id, name ->
                     navController.navigate(
-                        route ="${POKEMON_DETAILS_SCREEN_ROUTE}/$name/$url"
+                        route ="${POKEMON_DETAILS_SCREEN_ROUTE}/$name/$id"
                     )
-                }
+                },
+                onScreenEvent = viewModel::handle
             )
         }
 
         composable(
-            route = "${POKEMON_DETAILS_SCREEN_ROUTE}/{name}/{url}",
+            route = "${POKEMON_DETAILS_SCREEN_ROUTE}/{name}/{id}",
             arguments = listOf(
-                navArgument(name = "url") { type = NavType.StringType },
-                navArgument(name = "name") { type = NavType.StringType }
+                navArgument(name = "name") { type = NavType.StringType },
+                navArgument(name = "id") { type = NavType.IntType }
             )
         ) {
 
             val viewModel: PokemonDetailsViewModel = hiltViewModel()
 
             PokemonDetailsScreen(
-                state = viewModel.state.value,
+                state = viewModel.state,
+                events = viewModel.events,
                 navigateBack = {
                     navController.popBackStack()
                 }

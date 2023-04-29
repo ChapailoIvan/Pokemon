@@ -50,6 +50,9 @@ android {
 
 dependencies {
 
+    // Glide
+    implementation "com.github.bumptech.glide:compose:1.0.0-alpha.1"
+
     // Moshi
     implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
 

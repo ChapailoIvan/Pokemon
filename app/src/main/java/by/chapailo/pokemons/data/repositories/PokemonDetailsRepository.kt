@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PokemonDetailsRepository {
 
-    fun fetchPokemonDetails(name: String, url: String):
+    fun fetchPokemonDetails(id: Int, name: String):
             Flow<Resource<PokemonDetailsDbEntity?>>
 
 }

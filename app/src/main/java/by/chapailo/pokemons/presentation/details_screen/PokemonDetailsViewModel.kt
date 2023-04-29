@@ -7,9 +7,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import by.chapailo.pokemons.R
 import by.chapailo.pokemons.common.Resource
+import by.chapailo.pokemons.common.Resource.Companion.map
 import by.chapailo.pokemons.common.ResourceProvider
 import by.chapailo.pokemons.common.update
 import by.chapailo.pokemons.data.repositories.PokemonDetailsRepository
+import by.chapailo.pokemons.presentation.PokemonUiEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -24,11 +26,11 @@ class PokemonDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val pokemonUrl: String = checkNotNull(savedStateHandle["url"])
+    private val pokemonId: Int = checkNotNull(savedStateHandle["id"])
     private val pokemonName: String = checkNotNull(savedStateHandle["name"])
 
-    private val _state = mutableStateOf(PokemonDetailsScreenState())
-    val state: State<PokemonDetailsScreenState> = _state
+    private val _state = mutableStateOf<Resource<PokemonUiEntity?>>(Resource.Loading())
+    val state: State<Resource<PokemonUiEntity?>> = _state
 
     private val _events: Channel<String> = Channel()
     val events = _events.receiveAsFlow()
@@ -45,31 +47,16 @@ class PokemonDetailsViewModel @Inject constructor(
 
     private fun fetchPokemonDetails() {
         pokemonDetailsRepository.fetchPokemonDetails(
-            name = pokemonName,
-            url = pokemonUrl
+            id = pokemonId,
+            name = pokemonName
         ).onEach { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    resource.data?.let {
-                        _state.update(newValue = PokemonDetailsScreenState(pokemon = it))
-                    }
-                }
-                is Resource.Loading -> {
-                    if (resource.data != null)
-                        _state.update(newValue = PokemonDetailsScreenState(pokemon = resource.data))
-                    else
-                        _state.update { copy(isLoading = true) }
-                }
-                is Resource.Error -> {
-                    if (resource.data != null)
-                        _state.update(newValue = PokemonDetailsScreenState(pokemon = resource.data))
-                    else
-                        _state.update { copy(isWithError = true) }
+            if (resource.isErrorOccurredWhileRefreshingData())
+                onErrorAction(resourceProvider.getString(R.string.refreshing_data_error))
 
-                    onErrorAction(resource.error?.localizedMessage)
-                }
-            }
+            _state.update(newValue = resource.map { it?.let { PokemonUiEntity(it) } })
         }.launchIn(viewModelScope)
     }
 
+    private fun <T> Resource<T>.isErrorOccurredWhileRefreshingData(): Boolean
+        = this is Resource.Error && this.data != null
 }
