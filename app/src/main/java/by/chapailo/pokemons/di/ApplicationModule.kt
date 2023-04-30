@@ -63,7 +63,7 @@ object ApplicationModule {
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface ViewModelBindings {
+interface ApplicationBindings {
 
     @Binds
     fun bindDefaultPokemonDetailsRepositoryToPokemonDetailsRepository(

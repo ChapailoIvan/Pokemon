@@ -2,7 +2,6 @@ package by.chapailo.pokemons.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +23,7 @@ val COLLAPSED_TOP_BAR_HEIGHT = 56.dp
 fun ExpandedTopBar() {
     Box(
         modifier = Modifier
-            .background(MaterialTheme.colors.primaryVariant)
+            .background(MaterialTheme.colors.primary)
             .fillMaxWidth()
             .height(EXPANDED_TOP_BAR_HEIGHT - COLLAPSED_TOP_BAR_HEIGHT),
         contentAlignment = Alignment.BottomStart
@@ -47,7 +46,7 @@ fun CollapsedTopBar(
         if (isCollapsed) {
             MaterialTheme.colors.background
         } else {
-            MaterialTheme.colors.primaryVariant
+            MaterialTheme.colors.primary
         }
     )
 

@@ -13,7 +13,7 @@ import javax.inject.Inject
 class PokemonsRemoteMediator @Inject constructor(
     private val pokemonApi: PokemonApi,
     private val pokemonDao: PokemonDao
-): RemoteMediator<Int, PokemonDbEntity>() {
+) : RemoteMediator<Int, PokemonDbEntity>() {
 
     private var pageIndex = 0
 
@@ -22,8 +22,8 @@ class PokemonsRemoteMediator @Inject constructor(
         state: PagingState<Int, PokemonDbEntity>
     ): MediatorResult {
 
-        pageIndex = getPageIndex(loadType) ?:
-            return MediatorResult.Success(endOfPaginationReached = true)
+        pageIndex =
+            getPageIndex(loadType) ?: return MediatorResult.Success(endOfPaginationReached = true)
 
         val limit = state.config.pageSize
         val offset = pageIndex * limit
@@ -54,7 +54,7 @@ class PokemonsRemoteMediator @Inject constructor(
     }
 
     private fun getPageIndex(loadType: LoadType): Int? {
-        pageIndex = when(loadType) {
+        pageIndex = when (loadType) {
             LoadType.REFRESH -> 0
             LoadType.APPEND -> ++pageIndex
             LoadType.PREPEND -> return null

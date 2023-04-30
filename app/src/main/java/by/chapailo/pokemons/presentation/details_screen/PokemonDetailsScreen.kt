@@ -1,6 +1,6 @@
 package by.chapailo.pokemons.presentation.details_screen
 
-import android.widget.Toast
+import androidx.annotation.DimenRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -11,34 +11,32 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.repeatOnLifecycle
+import by.chapailo.pokemons.R
 import by.chapailo.pokemons.common.Resource
 import by.chapailo.pokemons.presentation.PokemonUiEntity
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun PokemonDetailsScreen(
     state: State<Resource<PokemonUiEntity?>>,
-    events: Flow<String>,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    onEventAction: (PokemonDetailsScreenEvent) -> Unit
 ) {
-
-    val context = LocalContext.current
-
-    CollectWithLifecycle {
-        events.collectLatest { errorMessage ->
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-        }
+    rememberSystemUiController().also {
+        it.setStatusBarColor(
+            color = MaterialTheme.colors.background
+        )
+        it.setNavigationBarColor(
+            color = MaterialTheme.colors.primary
+        )
     }
 
     when (val resource = state.value) {
@@ -66,8 +64,11 @@ fun PokemonDetailsScreen(
                 )
             } else {
                 PokemonDetailsScreenError(
-                    errorMessage = resource.throwable.localizedMessage ?: "Unexpected Error",
-                    navigateBack = navigateBack
+                    errorMessage = stringResource(id = R.string.retrieving_data_error_try_again),
+                    navigateBack = navigateBack,
+                    onRetryAction = {
+                        onEventAction(PokemonDetailsScreenEvent.TryAgain)
+                    }
                 )
             }
         }
@@ -88,7 +89,8 @@ private fun PokemonDetailsScreenContent(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.75f),
+                .weight(0.75f)
+                .background(color = MaterialTheme.colors.background),
             contentAlignment = Alignment.BottomStart
         ) {
 
@@ -111,7 +113,8 @@ private fun PokemonDetailsScreenContent(
                 Text(
                     modifier = Modifier.padding(20.dp),
                     text = pokemon.name,
-                    style = MaterialTheme.typography.h3
+                    style = MaterialTheme.typography.h3,
+                    color = MaterialTheme.colors.onBackground
                 )
             }
         }
@@ -120,22 +123,22 @@ private fun PokemonDetailsScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colors.primary)
-                .padding(20.dp)
+                .padding(dimensionResource(id = R.dimen.default_padding))
                 .weight(0.25f),
             verticalArrangement = Arrangement.Center
         ) {
             if (pokemon != null) {
-                StyledText(text = "Height: ${pokemon.height} m")
+                StyledText(text = stringResource(id = R.string.pokemon_height, pokemon.height))
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.default_spacer_height)))
 
-                StyledText(text = "Weight: ${pokemon.weight} kg")
+                StyledText(text = stringResource(id = R.string.pokemon_weight, pokemon.weight))
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(Modifier.height(dimensionResource(id = R.dimen.default_spacer_height)))
 
-                StyledText(text = "Type: ${pokemon.types}")
+                StyledText(text = stringResource(id = R.string.pokemon_type, pokemon.types))
             } else {
-                StyledText(text = "No information found")
+                StyledText(text = stringResource(id = R.string.pokemon_no_information_found))
             }
         }
 
@@ -148,7 +151,9 @@ private fun PokemonDetailsScreenLoading(
     navigateBack: () -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
     ) {
         PokemonDetailsScreenNavigateBack(
             modifier = Modifier
@@ -158,7 +163,8 @@ private fun PokemonDetailsScreenLoading(
 
         CircularProgressIndicator(
             modifier = Modifier
-                .align(Alignment.Center)
+                .align(Alignment.Center),
+            color = MaterialTheme.colors.onBackground
         )
     }
 }
@@ -166,10 +172,13 @@ private fun PokemonDetailsScreenLoading(
 @Composable
 private fun PokemonDetailsScreenError(
     errorMessage: String,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    onRetryAction: () -> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colors.background)
     ) {
         PokemonDetailsScreenNavigateBack(
             modifier = Modifier
@@ -177,10 +186,23 @@ private fun PokemonDetailsScreenError(
             navigateBack = navigateBack
         )
 
-        Text(
-            text = errorMessage,
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.half_default_padding)),
+                text = errorMessage,
+                color = MaterialTheme.colors.onBackground,
+                textAlign = TextAlign.Center
+            )
+
+            Button(
+                onClick = onRetryAction
+            ) {
+                Text(text = stringResource(id = R.string.button_retry))
+            }
+        }
     }
 }
 
@@ -192,27 +214,13 @@ private fun PokemonDetailsScreenNavigateBack(
     IconButton(
         onClick = { navigateBack() },
         modifier = modifier
-            .padding(10.dp)
+            .padding(dimensionResource(id = R.dimen.half_default_padding))
     ) {
         Icon(
             imageVector = Icons.Default.ArrowBack,
-            contentDescription = null
+            contentDescription = null,
+            tint = MaterialTheme.colors.onBackground
         )
-    }
-}
-
-@Composable
-fun CollectWithLifecycle(
-    collectBlock: suspend () -> Unit
-) {
-    val lifecycle = LocalLifecycleOwner.current
-
-    LaunchedEffect(Unit) {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            launch {
-                collectBlock()
-            }
-        }
     }
 }
 
@@ -226,7 +234,12 @@ fun StyledText(
         modifier = modifier,
         text = text,
         color = color,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Normal
+        fontSize = fontDimensionResource(id = R.dimen.styled_text_font_size),
+        fontWeight = FontWeight.Normal,
+        textAlign = TextAlign.Center
     )
 }
+
+@Composable
+@ReadOnlyComposable
+fun fontDimensionResource(@DimenRes id: Int) = dimensionResource(id = id).value.sp

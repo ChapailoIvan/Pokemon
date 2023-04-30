@@ -4,4 +4,13 @@
     <string name="refreshing_data_error">Error occurred while refreshing data</string>
     <string name="load_state_not_loading_message">There is no internet to load more data</string>
     <string name="end_of_pagination_reached">End of pagination reached</string>
+
+    <string name="pokemon_height">Height: %1$s m.</string>
+    <string name="pokemon_weight">Weight: %1$s kg.</string>
+    <string name="pokemon_type">Type: %1$s</string>
+    <string name="pokemon_no_information_found">No information found</string>
+
+    <string name="button_retry">Retry</string>
+
+    <string name="retrieving_data_error_try_again">Error occurred while retrieving data. Please try again.</string>
 </resources>

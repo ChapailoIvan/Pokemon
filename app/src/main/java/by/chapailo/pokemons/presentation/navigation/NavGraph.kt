@@ -2,12 +2,13 @@ package by.chapailo.pokemons.presentation.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import by.chapailo.pokemons.common.Constants.POKEMON_ID_KEY
+import by.chapailo.pokemons.common.Constants.POKEMON_NAME_KEY
 import by.chapailo.pokemons.presentation.details_screen.PokemonDetailsScreen
 import by.chapailo.pokemons.presentation.details_screen.PokemonDetailsViewModel
 import by.chapailo.pokemons.presentation.list_screen.PokemonListScreen
@@ -34,18 +35,17 @@ fun NavGraph(
                 pokemonList = viewModel.pokemonPagingData,
                 navigateToDetailsScreen = { id, name ->
                     navController.navigate(
-                        route ="${POKEMON_DETAILS_SCREEN_ROUTE}/$name/$id"
+                        route = "${POKEMON_DETAILS_SCREEN_ROUTE}/$name/$id"
                     )
-                },
-                onScreenEvent = viewModel::handle
+                }
             )
         }
 
         composable(
             route = "${POKEMON_DETAILS_SCREEN_ROUTE}/{name}/{id}",
             arguments = listOf(
-                navArgument(name = "name") { type = NavType.StringType },
-                navArgument(name = "id") { type = NavType.IntType }
+                navArgument(name = POKEMON_NAME_KEY) { type = NavType.StringType },
+                navArgument(name = POKEMON_ID_KEY) { type = NavType.IntType }
             )
         ) {
 
@@ -53,10 +53,10 @@ fun NavGraph(
 
             PokemonDetailsScreen(
                 state = viewModel.state,
-                events = viewModel.events,
                 navigateBack = {
                     navController.popBackStack()
-                }
+                },
+                onEventAction = viewModel::handle
             )
         }
 

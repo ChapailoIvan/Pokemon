@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_padding">20dp</dimen>
+    <dimen name="half_default_padding">10dp</dimen>
+    <dimen name="default_spacer_height">10dp</dimen>
+    <dimen name="styled_text_font_size">18sp</dimen>
+    <dimen name="divider_horizontal_padding">16dp</dimen>
+</resources>

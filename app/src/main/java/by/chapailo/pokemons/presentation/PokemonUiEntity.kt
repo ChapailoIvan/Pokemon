@@ -1,7 +1,7 @@
 package by.chapailo.pokemons.presentation
 
-import by.chapailo.pokemons.data.local.PokemonDbEntity
-import by.chapailo.pokemons.data.local.PokemonDetailsDbEntity
+import by.chapailo.pokemons.data.common.Pokemon
+import by.chapailo.pokemons.data.common.PokemonDetails
 
 data class PokemonUiEntity(
     val id: Int = -1,
@@ -12,18 +12,18 @@ data class PokemonUiEntity(
     val imageUrl: String = ""
 ) {
 
-    constructor(pokemonDbEntity: PokemonDbEntity) : this(
-        id = retrieveIdFromUrl(pokemonDbEntity.url),
-        name = pokemonDbEntity.name
+    constructor(pokemon: Pokemon) : this(
+        id = retrieveIdFromUrl(pokemon.url),
+        name = pokemon.name
     )
 
-    constructor(pokemonDetailsDbEntity: PokemonDetailsDbEntity) : this(
-        id = pokemonDetailsDbEntity.id,
-        name = pokemonDetailsDbEntity.name,
-        types = pokemonDetailsDbEntity.types.joinToString(", ") { type -> type.type.name },
-        weight = pokemonDetailsDbEntity.weight.toString(),
-        height = pokemonDetailsDbEntity.height.toString(),
-        imageUrl = pokemonDetailsDbEntity.sprites.front_default
+    constructor(pokemonDetails: PokemonDetails) : this(
+        id = pokemonDetails.id,
+        name = pokemonDetails.name,
+        types = pokemonDetails.types.joinToString(", ") { type -> type.type.name },
+        weight = pokemonDetails.weight.toString(),
+        height = pokemonDetails.height.toString(),
+        imageUrl = pokemonDetails.sprites.front_default
     )
 
     companion object {

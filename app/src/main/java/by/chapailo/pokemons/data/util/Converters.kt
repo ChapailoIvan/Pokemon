@@ -20,7 +20,7 @@ class Converters {
 
     @TypeConverter
     fun stringToTypesList(data: String): List<Type> {
-        return data.split(";").map { typeString ->
+        return if (data.isNotBlank()) data.split(";").map { typeString ->
             typeString.split(",").run {
                 Type(
                     type = TypeX(this[0], this[1]),
@@ -28,6 +28,7 @@ class Converters {
                 )
             }
         }
+        else emptyList()
     }
 
     @TypeConverter
